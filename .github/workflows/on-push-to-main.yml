@@ -50,3 +50,9 @@ jobs:
           DESTRUCTIVE_CHANGES: destructive-changes
           TEST_LEVEL: RunLocalTests
           WAIT: 120
+
+      - name: Clean up files
+        run: node ./scripts/node-scripts/clean-up-files/clean-up.js
+
+      - name: Git Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
