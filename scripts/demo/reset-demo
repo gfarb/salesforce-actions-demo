@@ -1,0 +1,34 @@
+#!/bin/bash
+if [ -f "destructive-changes/destructiveChangesPost.xml" ]; then
+    rm destructive-changes/destructiveChangesPost.xml
+fi
+
+cp \
+demo-files/workflows/on-push-to-main.yml \
+.github/workflows/on-push-to-main.yml
+
+cp \
+demo-files/apex-classes/HelloWorld.cls \
+demo-files/apex-classes/HelloWorld.cls-meta.xml \
+demo-files/apex-classes/HelloWorldTest.cls \
+demo-files/apex-classes/HelloWorldTest.cls-meta.xml \
+demo-files/apex-classes/ToDelete1.cls \
+demo-files/apex-classes/ToDelete1.cls-meta.xml \
+demo-files/apex-classes/ToDelete2.cls \
+demo-files/apex-classes/ToDelete2.cls-meta.xml \
+force-app/main/default/classes
+
+git add . 
+git commit --allow-empty -m "Committing and deploying all demo class files"
+git push
+echo "Demo files will be deployed by the on-push-to-main workflow"
+
+if [ ! -d "destructive-changes" ]; then
+    mkdir destructive-changes
+fi
+
+cp \
+demo-files/destructive-changes/destructiveChangesPost.xml \
+destructive-changes/destructiveChangesPost.xml
+
+rm force-app/main/default/classes/ToDelete1.cls force-app/main/default/classes/ToDelete1.cls-meta.xml

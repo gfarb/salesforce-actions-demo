@@ -1,0 +1,52 @@
+on:
+  push:
+    branches:
+      - "main"
+name: Deploy to Salesforce
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        id: npm_cache_id
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        if: steps.npm_cache_id.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: SFDX Auth
+        env:
+          SFDX_USERNAME: ${{ secrets.SFDX_USERNAME }}
+          SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
+          SFDX_JWT_KEY: ${{ secrets.SFDX_JWT_KEY }}
+        run: |
+          echo "$SFDX_JWT_KEY" > server.key
+          npx sfdx force:auth:jwt:grant \
+            --username $SFDX_USERNAME --setdefaultdevhubusername \
+            --clientid $SFDX_CLIENT_ID \
+            --jwtkeyfile server.key
+
+      - name: Build, Test & Deploy
+        id: build_test_deploy
+        uses: gfarb/sfdx-deploy@v1
+        env:
+          TARGET_USERNAME: ${{ secrets.SFDX_USERNAME }}
+          SOURCE_PATH: force-app
+          DESTRUCTIVE_CHANGES: destructive-changes
+          TEST_LEVEL: RunLocalTests
+          WAIT: 120

@@ -1,0 +1,13 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": [
+    "@salesforce/eslint-config-lwc/recommended",
+    "@salesforce/eslint-config-lwc/i18n"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  }
+}
