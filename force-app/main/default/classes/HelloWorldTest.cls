@@ -3,9 +3,9 @@ public with sharing class HelloWorldTest {
     static @IsTest
     void positive() {
         Test.startTest();
-        HelloWorld helloWorldTest = new HelloWorld('');
+        HelloWorld helloWorldTest = new HelloWorld('Dreamforce');
         Test.stopTest();
-        System.assertEquals('', helloWorldTest.name);
+        System.assertEquals('Dreamforce', helloWorldTest.name);
     }
 
     static @IsTest
